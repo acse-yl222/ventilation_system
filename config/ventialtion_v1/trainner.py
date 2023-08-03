@@ -27,3 +27,5 @@ trainner = dict(
     noise_scheduler=noise_scheduler,
     optimizer=dict(type="Adam", lr=0.001),
     dataset=train_dataset, )
+
+wandb_config = dict()
