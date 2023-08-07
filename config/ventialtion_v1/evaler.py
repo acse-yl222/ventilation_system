@@ -14,21 +14,21 @@ dataset = dict(
     csv_path='data/v1.csv',
 )
 
-train_config = dict(
+eval_config = dict(
     device=device,
     output_dir="caches/ventilation_v1/unet",
-    u_net_weight_path = None,
+    u_net_weight_path = 'weight/unet.pth',
     prediction_point=32,
     num_train_timesteps=200,
-    batch_size=10,
-    batch_index=3,
+    batch_size=1,
+    batch_index=0,
 )
 
 project_name = prject_name
 
 evaler = dict(
     type=DVMEvaler,
-    evaler_config=train_config,
+    evaler_config=eval_config,
     unet=unet,
     noise_scheduler=noise_scheduler,
     dataset=train_dataset,)

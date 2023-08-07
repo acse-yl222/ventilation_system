@@ -8,4 +8,4 @@ config = Config.fromfile(config_file_path)
 
 evaler = DVMR.build(config.evaler)
 
-evaler.long_time_eval()
+evaler.eval()

@@ -31,7 +31,7 @@ class DVMEvaler:
     def initial_unet(self):
         self.unet.to(self.config.device)
         if self.config.u_net_weight_path is not None:
-            self.u_net.load_state_dict(torch.load(self.config.u_net_weight_path, map_location=self.config.device))
+            self.unet.load_state_dict(torch.load(self.config.u_net_weight_path, map_location=self.config.device))
             print("Load u_net weight from {}".format(self.config.u_net_weight_path))
         else:
             print("No u_net weight path is provided, use random weight")
@@ -51,9 +51,9 @@ class DVMEvaler:
         inputs = batch[0]
         return inputs
 
-    def long_time_eval(self):
+    def eval(self):
         inputs = self.get_batch(self.config.batch_index)
-        inputs.to(self.config.device)
+        inputs = inputs.to(self.config.device)
         image = randn_tensor(inputs.shape, device=self.config.device, dtype=self.unet.dtype)
         image[:, :, 0:self.config.prediction_point, :] = inputs[:, :, 0:self.config.prediction_point, :]
 
