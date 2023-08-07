@@ -25,7 +25,7 @@ import torch
 from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers.utils import BaseOutput, randn_tensor
 from diffusers.schedulers.scheduling_utils import KarrasDiffusionSchedulers, SchedulerMixin
-from ..registry import DVM
+from ..registry import DVMR
 
 
 @dataclass
@@ -128,7 +128,7 @@ def rescale_zero_terminal_snr(betas):
     return betas
 
 
-@DVM.register_module()
+@DVMR.register_module()
 class DDIMScheduler(SchedulerMixin, ConfigMixin):
     """
     Denoising diffusion implicit models is a scheduler that extends the denoising procedure introduced in denoising

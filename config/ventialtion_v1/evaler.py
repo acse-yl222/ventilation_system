@@ -1,5 +1,5 @@
 from mmengine import read_base
-from DVM import DVMTrainner
+from DVM import DVMEvaler
 
 with read_base():
     from ._base_.train_dataset import train_dataset
@@ -24,17 +24,10 @@ train_config = dict(
 
 project_name = prject_name
 
-trainner = dict(
-    type=DVMTrainner,
+evaler = dict(
+    type=DVMEvaler,
     trainner_config=train_config,
     unet=unet,
     noise_scheduler=noise_scheduler,
     optimizer=dict(type="Adam", learning_rate=0.001),
     dataset=train_dataset,)
-
-wandb_config = dict(
-    learning_rate=trainner['optimizer']['learning_rate'],
-    architecture="diffusion model",
-    dataset=project_name,
-    epochs=train_config['num_epochs'],
-)

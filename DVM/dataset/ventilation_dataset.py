@@ -2,10 +2,9 @@ import pandas as pd
 from torch.utils.data import Dataset
 import torch
 import numpy as np
-from ..registry import DVD
+from ..registry import DVDR
 
-
-@DVD.register_module
+@DVDR.register_module()
 class VentilationDataset(Dataset):
     def __init__(self, csv_path):
         self.transform = None
@@ -45,7 +44,7 @@ class VentilationDataset(Dataset):
         return denormalized_data
 
 
-@DVD.register_module
+@DVDR.register_module()
 class Long_predictionVentilationDataset(Dataset):
     def __init__(self, csv_path):
         self.transform = None

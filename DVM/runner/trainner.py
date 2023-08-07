@@ -1,5 +1,5 @@
 from mmengine import Config
-from ..registry import DVM, DVD
+from ..registry import DVMR, DVDR
 from torchvision.transforms import Compose, Normalize
 from ..pipeline import DDIMPipeline
 import os
@@ -10,30 +10,34 @@ import torch
 import torch.nn.functional as F
 from diffusers.optimization import get_cosine_schedule_with_warmup
 from torch.utils.data import DataLoader
+from ..registry import DVMR, DVDR
 
+
+@DVMR.register_module()
 class DVMTrainner:
     def __init__(self,
                  trainner_config: Config,
-                 u_net: Config,
+                 unet: Config,
                  noise_scheduler: Config,
                  optimizer: Config,
                  dataset: Config):
-        self.unet = DVM.build(u_net)
-        self.noise_scheduler = DVM.build(noise_scheduler)
-        self.pipeline = DDIMPipeline(unet=u_net, scheduler=noise_scheduler)
+        self.config = trainner_config
+        self.unet = DVMR.build(unet)
+        self.initial_unet()
+        self.noise_scheduler = DVMR.build(noise_scheduler)
+        self.pipeline = DDIMPipeline(unet=self.unet, scheduler=self.noise_scheduler)
         transform = Compose([
             Normalize(mean=[0.5], std=[0.5]),
         ])
-        self.dataset = DVD.build(dataset)
+        self.dataset = DVDR.build(dataset)
         dataset.transform = transform
-        self.dataloader = DataLoader(self.dataset, batch_size=self.config.batch_size, shuffle=True)
+        self.dataloader = DataLoader(self.dataset, batch_size=self.config.train_batch_size, shuffle=True)
         self.optimizer = torch.optim.Adam(self.unet.parameters(), lr=optimizer.learning_rate)
         self.lr_scheduler = get_cosine_schedule_with_warmup(
             optimizer=self.optimizer,
-            num_warmup_steps=len(self.dataloader) * self.config.warmup_epoch,
-            num_training_steps=(len(self.dataloader) * self.config.num_epoch),
+            num_warmup_steps=self.config.lr_warmup_steps,
+            num_training_steps=(len(self.dataloader) * self.config.num_epochs),
         )
-        self.config = trainner_config
 
     def initial_unet(self):
         self.unet.to(self.config.device)
@@ -97,10 +101,10 @@ class DVMTrainner:
         return loss.item()
 
     def train(self):
-        for epoch in range(self.config.num_epoch):
+        for epoch in range(self.config.num_epochs):
             total_loss = 0
             for iteration, batch in enumerate(self.dataloader):
                 total_loss += self.train_single_batch(batch, epoch * len(self.dataloader) + iteration)
                 if (epoch * len(self.dataloader) + iteration) % (2 * len(self.dataloader)) == 0:
-                    self.evaluate(epoch * len(self.dataloader) + iteration, batch)
+                    self.evaluate(batch, epoch * len(self.dataloader) + iteration)
             wandb.log({'total loss': total_loss})

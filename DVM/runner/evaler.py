@@ -1,5 +1,5 @@
 from mmengine import Config
-from ..registry import DVM, DVD
+from ..registry import DVMR, DVDR
 from torchvision.transforms import Compose, Normalize
 from ..pipeline import DDIMPipeline
 from torch.utils.data import DataLoader
@@ -7,16 +7,19 @@ import torch
 from diffusers.utils import randn_tensor
 import numpy as np
 from ..utils import compare
+from ..registry import DVMR, DVDR
 
+
+@DVMR.register_module()
 class DVMEvaler:
     def __init__(self,
                  unet: Config,
                  dataset: Config,
                  evaler_config: Config,
                  noise_scheduler: Config):
-        self.unet = DVM.build(unet)
-        self.noise_scheduler = DVM.build(noise_scheduler)
-        self.dataset = DVD.build(dataset)
+        self.unet = DVMR.build(unet)
+        self.noise_scheduler = DVMR.build(noise_scheduler)
+        self.dataset = DVDR.build(dataset)
         self.config = evaler_config
         data_title_string = "time_sin,time_cos,Occupancy,door_gap,window_gap,humidity,VOC_ppb,temperature_Main,temperature_FRT,temperature_FRM,temperature_FRB,temperature_FMT,temperature_FMM,temperature_FMB,temperature_FLT,temperature_FLM,temperature_FLB,temperature_BRT,temperature_BRM,temperature_BRB,temperature_BMT,temperature_BMM,temperature_BMB,temperature_BLT,temperature_BLM,temperature_BLB,temperature_WRB,temperature_WMB,temperature_WLB,temperature_WLF,temperature_DoorRT,temperature_BTable,temperature_PRUR,temperature_PRUL,temperature_PRDR,temperature_PRDL,temperature_PLDR,temperature_PLDL,temperature_Out,light_BLM,light_BLB,light_WRB,light_WMB,light_WLB,light_WLF,light_DoorRT,light_BTable,light_PRUR,light_PRUL,light_PRDR,light_PRDL,light_PLDR,light_PLDL,light_Out,outdoor_temperature,outdoor_humidity,outdoor_windgust,outdoor_windspeed,outdoor_winddir,outdoor_sealevelpressure,outdoor_dew,outdoor_cloudcover,outdoor_solarradiation,outdoor_solarenergy"
         self.title_list = data_title_string.split(',')

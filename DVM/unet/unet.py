@@ -22,7 +22,7 @@ from diffusers.utils import BaseOutput
 from diffusers.models.embeddings import GaussianFourierProjection, TimestepEmbedding, Timesteps
 from diffusers.models.modeling_utils import ModelMixin
 from diffusers.models.unet_2d_blocks import UNetMidBlock2D, get_down_block, get_up_block
-from ..registry import DVM
+from ..registry import DVMR
 
 
 @dataclass
@@ -38,7 +38,7 @@ class UNet2DOutput(BaseOutput):
     sample: torch.FloatTensor
 
 
-@DVM.register_module()
+@DVMR.register_module()
 class UNet2DModel(ModelMixin, ConfigMixin):
     r"""
     A 2D UNet _base_ that takes a noisy sample and a timestep and returns a sample shaped output.
