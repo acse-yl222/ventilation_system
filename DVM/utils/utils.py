@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 def compare(ori, pre, prediction_point, title_list):
     for index_image in range(8):
         fig, axs = plt.subplots(4, 2, figsize=(15, 15))
@@ -16,5 +17,8 @@ def compare(ori, pre, prediction_point, title_list):
             ax.legend()
             ax.margins(0, 4)
         plt.tight_layout()
-        plt.savefig(f"images/{index_image}.png")
+        father_path = "caches/prediction"
+        if not os.path.exists(father_path):
+            os.makedirs(father_path)
+        plt.savefig(os.path.join(father_path,f"{index_image}.png"))
         plt.close()
