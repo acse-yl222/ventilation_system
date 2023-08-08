@@ -2,7 +2,6 @@
 
 ## Introduction
 
-
 ## Installation
 This project is based on Pytorch.
 You can use the following command to install the Pytorch.
