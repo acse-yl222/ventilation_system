@@ -4,8 +4,8 @@ unet = dict(
     type=UNet2DModel,
     down_block_types=("DownBlock2D", "AttnDownBlock2D", "AttnDownBlock2D", "AttnDownBlock2D"),
     up_block_types=("AttnUpBlock2D", "AttnUpBlock2D", "AttnUpBlock2D", "UpBlock2D"),
-    block_out_channels=(224, 448, 672, 896),
+    block_out_channels=(224, 448, 672, 224),
     in_channels=1,
     out_channels=1,
-    sample_size=(64, 64),
+    sample_size=(80, 80),
 )

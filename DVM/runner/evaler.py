@@ -4,7 +4,7 @@ from torchvision.transforms import Compose, Normalize
 from ..pipeline import DDIMPipeline
 from torch.utils.data import DataLoader
 import torch
-from diffusers.utils import randn_tensor
+from diffusers.utils.torch_utils import randn_tensor
 import numpy as np
 from ..utils import compare
 from ..registry import DVMR, DVDR
