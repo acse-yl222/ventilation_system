@@ -16,10 +16,10 @@ class VentilationDataset(Dataset):
         self.min_value = self.normalize_with_min_max(self.data)
 
     def __len__(self):
-        return self.data.shape[0] - 80 + 1
+        return self.data.shape[0] - 56 + 1
 
     def __getitem__(self, index):
-        image = self.normalized_data[index:index + 80, :]
+        image = self.normalized_data[index:index + 56, :]
         image = torch.from_numpy(image)
         image = torch.unsqueeze(image, 0)
         image = image.float()

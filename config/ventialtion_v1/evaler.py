@@ -11,14 +11,14 @@ device = "cuda"
 
 dataset = dict(
     type=Long_predictionVentilationDataset,
-    csv_path='data/v1.csv',
+    csv_path='data/test_1.csv',
 )
 
 eval_config = dict(
     device=device,
     output_dir="caches/ventilation_v1/unet",
     u_net_weight_path = 'weight/unet.pth',
-    prediction_point=32,
+    prediction_point=42,
     num_train_timesteps=200,
     batch_size=1,
     batch_index=0,

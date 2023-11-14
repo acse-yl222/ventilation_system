@@ -1,3 +1,5 @@
+import random
+
 from mmengine import Config
 from ..registry import DVMR, DVDR
 from torchvision.transforms import Compose, Normalize
@@ -34,7 +36,7 @@ class DVMTrainner:
         self.train_dataset.transform = transform
         self.val_dataset.transform = transform
         self.train_dataloader = DataLoader(self.train_dataset, batch_size=self.config.train_batch_size, shuffle=True)
-        self.val_dataloader = DataLoader(self.val_dataset, batch_size=self.config.train_batch_size, shuffle=True)
+        self.val_dataloader = DataLoader(self.val_dataset, batch_size=self.config.eval_batch_size, shuffle=True)
         self.optimizer = torch.optim.Adam(self.unet.parameters(), lr=optimizer.learning_rate)
         self.lr_scheduler = get_cosine_schedule_with_warmup(
             optimizer=self.optimizer,
@@ -89,8 +91,8 @@ class DVMTrainner:
         image_add_noise = self.noise_scheduler.add_noise(clean_images, noise, timesteps)
         image_add_noise[:, :, 0:self.config.prediction_point, :] = clean_images[:, :, 0:self.config.prediction_point, :]
         noise_pred = self.unet(image_add_noise, timesteps, return_dict=False)[0]
-        loss = F.mse_loss(noise_pred[:, :, self.config.prediction_point:64, :],
-                          noise[:, :, self.config.prediction_point:64, :])
+        loss = F.mse_loss(noise_pred[:, :, self.config.prediction_point:, :],
+                          noise[:, :, self.config.prediction_point:, :])
         loss.backward()
         self.optimizer.step()
         self.lr_scheduler.step()
@@ -104,12 +106,14 @@ class DVMTrainner:
         return loss.item()
 
     def train(self):
+        number_interation = 0
         for epoch in range(self.config.num_epochs):
-            total_loss = 0
             for iteration, batch in enumerate(self.train_dataloader):
-                print(f'iteration {iteration}/{len(self.train_dataloader)}')
-                total_loss += self.train_single_batch(batch, epoch * len(self.train_dataloader) + iteration)
-            wandb.log({'total loss': total_loss})
-            for iteration,batch in enumerate(self.val_dataset):
-                self.evaluate(batch,epoch)
-                break
+                self.train_single_batch(batch, number_interation)
+                number_interation+=1
+                if number_interation>=self.config.eval_begin and number_interation%self.config.eval_interval==0:
+                    index = random.randint(1,len(self.val_dataloader)-1)
+                    for eval_iteration,eval_batch in enumerate(self.val_dataloader):
+                        if eval_iteration==index:
+                            self.evaluate(eval_batch,number_interation)
+                            break

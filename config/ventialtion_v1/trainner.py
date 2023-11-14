@@ -10,16 +10,17 @@ with read_base():
 device = "cuda"
 train_config = dict(
     device=device,
-    output_dir="caches/ventilation_v1/unet",
-    u_net_weight_path=None,
-    prediction_point=32,
+    output_dir="caches/ventilation_v4/unet",
+    u_net_weight_path="caches/ventilation_v3/unet/31000/unet.pth",
+    prediction_point=42,
     num_train_timesteps=200,
-    num_epochs=1000,
-    train_batch_size=25,
+    num_epochs=12,
+    train_batch_size=20,
     eval_batch_size=40,
-    learning_rate=0.001,
-    lr_warmup_steps=100,
-    eval_interval=100,
+    learning_rate=0.00005,
+    lr_warmup_steps=10000,
+    eval_begin=10000,
+    eval_interval=5000,
 )
 
 project_name = prject_name
@@ -29,7 +30,7 @@ trainner = dict(
     trainner_config=train_config,
     unet=unet,
     noise_scheduler=noise_scheduler,
-    optimizer=dict(type="Adam", learning_rate=0.001),
+    optimizer=dict(type="Adam", learning_rate=0.00005),
     train_dataset=train_dataset,
     val_dataset=val_dataset)
 
